@@ -1,40 +1,31 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';                                                           
 import icon from '../../assets/icon.svg';
 import './App.css';
+import { getAppCacheDir } from 'electron-updater/out/AppAdapter';
 
 function Hello() {
+  const link = "./pic/";
+  const straightlink = '/direct-dir-link/pic/'
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [randomPhoto, setRandomPhoto] = useState<string | null>(null);
+
+  useEffect(() => {
+    window.electron.fs.readdir(link).then((files) =>{console.log(files); setPhotos(files)});
+  }, []);
+
+  const getRandomPhoto = () => {
+    const randomIndex = Math.floor(Math.random() * photos.length);
+    const randomPhotoName = photos[randomIndex];
+    const randomPhotoPath = `${straightlink}${randomPhotoName}`;
+    console.log(randomPhotoPath);
+    setRandomPhoto(randomPhotoPath);
+  };
+
   return (
     <div>
-      <div className="Hello">
-        <img width="200" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="folded hands">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
+      <button onClick={getRandomPhoto}>ランダムな写真を表示する</button>
+      {randomPhoto && <img src={`file:${randomPhoto}`} alt="Random Photo" />}
     </div>
   );
 }

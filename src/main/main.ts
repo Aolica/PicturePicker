@@ -12,6 +12,7 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import fs from 'fs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -124,6 +125,24 @@ app.on('window-all-closed', () => {
   }
 });
 
+ipcMain.handle('readdir',async (event, url: string) => {
+  const lists = await getdirname(url);
+  return lists;
+});
+function test(){
+  return ["a","b"];
+}
+function getdirname(url:string) {
+  return new Promise<string[]>((resolve, reject) => {
+    fs.readdir(url, (e, data) => {
+      if (e != null) {
+        reject(e);
+        return;
+      }
+      resolve(data);
+    });
+  });
+}
 app
   .whenReady()
   .then(() => {

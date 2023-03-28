@@ -22,6 +22,11 @@ const electronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },
+  fs: {
+    async readdir(url: string) : Promise<string[]> {
+      return await ipcRenderer.invoke('readdir',url);
+    }
+  },
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
